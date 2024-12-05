@@ -71,3 +71,16 @@ class CRUDBase:
         await session.delete(db_obj)
         await session.commit()
         return db_obj
+
+
+    async def get_earliest_object(
+        self,
+        session: AsyncSession
+        
+    ):
+        db_obj = await session.execute(
+            select(self.model).where(
+                self.model.fully_invested == False
+            ).order_by(self.model.create_date)
+        )
+        return db_obj.scalars().first()

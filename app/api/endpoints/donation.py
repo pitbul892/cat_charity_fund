@@ -7,6 +7,9 @@ from app.schemas.charity_project import CharityProjectDB, CharityProjectCreate, 
 from app.models import CharityProject
 from app.crud import project_crud, donation_crud
 from ..validators import check_name_duplicate, check_project_before_edit
+from app.services.investing import investing
+
+
 router = APIRouter()
 
 @router.get('/',
@@ -23,10 +26,9 @@ async def create_donation(
     donation: DonationCreate,
     session: AsyncSession = Depends(get_async_session)
 ):
-
-    return await donation_crud.create(
-        donation, session
-    )
+    new_donation = await donation_crud.create(donation, session)
+    await investing(new_donation, session)
+    return new_donation
 # @router.get('/my',
 #             response_model=DonationDB,
 #             response_model_exclude={'invested_amount'})
