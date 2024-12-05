@@ -8,7 +8,7 @@ class CharityProjectBase(BaseModel):
     name: Optional[str] = Field(None, min_length=1, max_length=100)
     description: Optional[str]
     full_amount: Optional[PositiveInt]
-    created_date: datetime = Field(default_factory=datetime.now)
+
     class Config:
         extra = Extra.forbid
         
@@ -26,12 +26,13 @@ class CharityProjectCreate(CharityProjectBase):
                 "full_amount": 0
             }
         }
-class CharityProjectUpdate(CharityProjectBase):
+class CharityProjectUpdate(CharityProjectCreate):
     pass
 class CharityProjectDB(CharityProjectBase):
     id:int
     invested_amount: Optional[int] = 0
     fully_invested: Optional[bool] = False
+    create_date: Optional[datetime]
     close_date: Optional[datetime]
     class Config:
         orm_mode = True
