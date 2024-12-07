@@ -1,9 +1,11 @@
 from typing import Optional
 
-from app.crud.base import CRUDBase
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.crud.base import CRUDBase
 from app.models import CharityProject
+
 
 class CRUDCharityProject(CRUDBase):
     async def get_project_by_name(
@@ -16,8 +18,4 @@ class CRUDCharityProject(CRUDBase):
                 CharityProject.name == project_name
             )
         )
-        return db_project_id.scalars().first()   
-
-
-
-
+        return db_project_id.scalars().first()

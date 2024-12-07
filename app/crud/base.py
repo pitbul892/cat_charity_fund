@@ -1,17 +1,19 @@
-# app/crud/base.py
+from typing import Optional
+
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from typing import Optional
+
+from app.models import User
 
 
 class CRUDBase:
 
     def __init__(self, model):
         self.model = model
-    # async def investing()
+
     async def get(
-            self, 
+            self,
             obj_id: int,
             session: AsyncSession,
     ):
@@ -23,23 +25,23 @@ class CRUDBase:
         return db_obj.scalars().first()
 
     async def get_multi(
-            self, 
+            self,
             session: AsyncSession
     ):
         db_objs = await session.execute(select(self.model))
         return db_objs.scalars().all()
 
     async def create(
-            self, 
+            self,
             obj_in,
             session: AsyncSession,
-            # user: Optional[User] = None
+            user: Optional[User] = None
     ):
         obj_in_data = obj_in.dict()
-        # obj_in_data.pop('created_date', None)
-        # if user is not None:
-        #     # ...то дополнить словарь для создания модели.
-        #     obj_in_data['user_id'] = user.id
+        obj_in_data.pop('created_date', None)
+        if user is not None:
+            # ...то дополнить словарь для создания модели.
+            obj_in_data['user_id'] = user.id
         db_obj = self.model(**obj_in_data)
         session.add(db_obj)
         await session.commit()
@@ -72,15 +74,14 @@ class CRUDBase:
         await session.commit()
         return db_obj
 
-
     async def get_earliest_object(
         self,
         session: AsyncSession
-        
+
     ):
         db_obj = await session.execute(
             select(self.model).where(
-                self.model.fully_invested == False
+                self.model.fully_invested == 0
             ).order_by(self.model.create_date)
         )
         return db_obj.scalars().first()

@@ -1,9 +1,10 @@
-from app.crud import project_crud, donation_crud
 from datetime import datetime
+
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.schemas.charity_project import CharityProjectDB
-from app.schemas.donation import DonationDB, DonationCreate
-from app.models import Donation, CharityProject
+
+from app.crud import donation_crud, project_crud
+from app.models import CharityProject, Donation
+
 
 async def investing(obj_in, session: AsyncSession):
 
@@ -12,7 +13,7 @@ async def investing(obj_in, session: AsyncSession):
         source_crud_model = project_crud
     elif isinstance(obj_in, CharityProject):
         # Crud для получения самого раннего пожертвования
-        source_crud_model = donation_crud 
+        source_crud_model = donation_crud
     # Остаток
     remaining_amount = obj_in.full_amount - obj_in.invested_amount
     # Закрытая часть
@@ -54,4 +55,3 @@ async def investing(obj_in, session: AsyncSession):
 
     await session.commit()
     await session.refresh(obj_in)
-    
