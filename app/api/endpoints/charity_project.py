@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.db import get_async_session
 from app.core.user import current_superuser
-from app.crud import project_crud
+from app.crud import donation_crud, project_crud
 from app.schemas.charity_project import (CharityProjectCreate,
                                          CharityProjectDB,
                                          CharityProjectUpdate)
@@ -34,8 +34,14 @@ async def create_charity_project(
     new_project = await project_crud.create(
         project, session
     )
-    await investing(new_project, session)
-    return new_project
+    unfinished_donations = await donation_crud.get_unfinished_objects(session)
+    updated_project, updated_donations = investing(
+        new_project, unfinished_donations
+    )
+    await donation_crud.save_updates(
+        session, updated_project, updated_donations
+    )
+    return updated_project
 
 
 @router.patch(

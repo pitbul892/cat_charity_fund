@@ -2,10 +2,13 @@ from datetime import datetime
 from typing import Optional
 
 from pydantic import BaseModel, Extra, Field, PositiveInt, validator
+from pydantic.fields import Required
+
+from app.core.constants import MAX_LENGTH_NAME
 
 
 class CharityProjectBase(BaseModel):
-    name: Optional[str] = Field(None, min_length=1, max_length=100)
+    name: Optional[str] = Field(None, min_length=1, max_length=MAX_LENGTH_NAME)
     description: Optional[str]
     full_amount: Optional[PositiveInt]
 
@@ -14,8 +17,8 @@ class CharityProjectBase(BaseModel):
 
 
 class CharityProjectCreate(CharityProjectBase):
-    name: str = Field(..., min_length=1, max_length=100)
-    description: str = Field(..., min_length=1)
+    name: str = Field(Required, min_length=1, max_length=MAX_LENGTH_NAME)
+    description: str = Field(Required, min_length=1)
     full_amount: PositiveInt
 
     class Config:
